@@ -41,9 +41,20 @@ public class ArticleActivity extends AppCompatActivity {
     // Day 6
     private ImageButton btnSaveArticle;
     private boolean isSaved = false;
-    private String articleUrl;
     private DatabaseHelper dbHelper = new DatabaseHelper(this);
+
+    // Cái này là từ NewsAdapter chuyển qua hặc từ BookMarkAdapter chuyển qua
+//        intent.putExtra("userId", currentUserId);
+//        intent.putExtra("url", it.getLink());
+//        intent.putExtra("title", it.getTitle());
+//        intent.putExtra("description", it.getDescription());
+//        intent.putExtra("imageUrl", imageUrl);
+
     private int currentUserId;
+    String title;
+    String description;
+    String imageUrl;
+    String articleUrl;
     // End Day 6
 
     @Override
@@ -51,7 +62,13 @@ public class ArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
         //Day 6
-       currentUserId = getIntent().getIntExtra("userId", -1); // Cái này là từ NewsAdapter chuyển qua
+        currentUserId = getIntent().getIntExtra("userId", -1);
+        title = getIntent().getStringExtra("title");
+        description = getIntent().getStringExtra("description");
+        imageUrl = getIntent().getStringExtra("imageUrl");
+        articleUrl = getIntent().getStringExtra("url");
+
+
 //        if(currentUserId == -1){ finish(); return; }
         //End day 6
 
@@ -69,8 +86,8 @@ public class ArticleActivity extends AppCompatActivity {
 
         //Day 6
 //        btnSaveArticle = findViewById(R.id.btnSaveArticle);
-        articleUrl = getIntent().getStringExtra("url");
-        BookmarkItem bookmark = new BookmarkItem(articleUrl, currentUserId);
+
+        BookmarkItem bookmark = new BookmarkItem(articleUrl, currentUserId, title, description, imageUrl);
 
         isSaved = dbHelper.isBookmarked(currentUserId, articleUrl);
 
@@ -84,7 +101,7 @@ public class ArticleActivity extends AppCompatActivity {
                 // In thử ra để kiểm tra giá trị của currentUserId
                 String currentUserIdString = String.valueOf(bookmark.getUserId());
                 Toast.makeText(this,"Gia tri id user tu ArticleActivity" + currentUserIdString,Toast.LENGTH_SHORT).show();
-                dbHelper.addBookmark(bookmark.getUserId(), bookmark.getUrl());
+                dbHelper.addBookmark(bookmark.getUserId(), bookmark.getUrl(), bookmark.getTitle(), bookmark.getDescription(), bookmark.getImageUrl());
                 isSaved = true;
             }
             updateBookmarkIcon();

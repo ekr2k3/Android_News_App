@@ -27,6 +27,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_BOOKMARK_ID = "id";
     public static final String COL_BOOKMARK_USER_ID = "user_id";
     public static final String COL_ARTICLE_URL = "url";
+    public static final String COL_ARTICLE_TITLE = "title";
+    public static final String COL_ARTICLE_DESCRIPTION = "description";
+    public static final String COL_ARTICLE_IMAGE_URL = "image_url";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,6 +48,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createBookmarkTable = "CREATE TABLE IF NOT EXISTS " + TABLE_BOOKMARK + " (" +
                 COL_BOOKMARK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 COL_BOOKMARK_USER_ID + " INTEGER," +
+                COL_ARTICLE_TITLE + " TEXT," +
+                COL_ARTICLE_DESCRIPTION + " TEXT," +
+                COL_ARTICLE_IMAGE_URL + " TEXT," +
                 COL_ARTICLE_URL + " TEXT," +
                 "FOREIGN KEY(" + COL_BOOKMARK_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COL_USER_ID + "))";
         db.execSQL(createBookmarkTable);
@@ -115,11 +121,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Phương thức quản lý bookmark
     // -----------------------
     // ...
-    public long addBookmark(int userId, String articleUrl) {
+    public long addBookmark(int userId, String articleUrl, String articleTitle, String articleDescription, String articleImageUrl) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_BOOKMARK_USER_ID, userId);
         values.put(COL_ARTICLE_URL, articleUrl);
+        values.put(COL_ARTICLE_TITLE, articleTitle);
+        values.put(COL_ARTICLE_DESCRIPTION, articleDescription);
+        values.put(COL_ARTICLE_IMAGE_URL, articleImageUrl);
         return db.insert(TABLE_BOOKMARK, null, values);
     }
 
@@ -128,7 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_BOOKMARK,
-                new String[]{COL_BOOKMARK_ID, COL_ARTICLE_URL, COL_BOOKMARK_USER_ID},
+                new String[]{COL_BOOKMARK_ID, COL_ARTICLE_URL, COL_BOOKMARK_USER_ID, COL_ARTICLE_TITLE, COL_ARTICLE_DESCRIPTION, COL_ARTICLE_IMAGE_URL},
                 COL_BOOKMARK_USER_ID + "=?",
                 new String[]{String.valueOf(userId)},
                 null, null, null);
@@ -138,8 +147,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int bookmarkId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_BOOKMARK_ID));
                 String url = cursor.getString(cursor.getColumnIndexOrThrow(COL_ARTICLE_URL));
                 int uid = cursor.getInt(cursor.getColumnIndexOrThrow(COL_BOOKMARK_USER_ID));
+                String title = cursor.getString(cursor.getColumnIndexOrThrow(COL_ARTICLE_TITLE));
+                String description = cursor.getString(cursor.getColumnIndexOrThrow(COL_ARTICLE_DESCRIPTION));
+                String imageUrl = cursor.getString(cursor.getColumnIndexOrThrow(COL_ARTICLE_IMAGE_URL));
 
-                BookmarkItem item = new BookmarkItem(url, uid);
+                BookmarkItem item = new BookmarkItem(url, uid, title, description, imageUrl);
                 item.setBookMarkId(bookmarkId); // set id tự tăng
                 bookmarks.add(item);
             }
