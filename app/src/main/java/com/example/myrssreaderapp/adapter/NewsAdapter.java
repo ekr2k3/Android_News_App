@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myrssreaderapp.DataHelper.userDatabaseHelper;
 import com.example.myrssreaderapp.ui.ArticleActivity;
 import com.example.myrssreaderapp.R;
 import com.example.myrssreaderapp.models.Item;
@@ -23,9 +24,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private Context context;
     private List<Item> list;
 
-    public NewsAdapter(Context context, List<Item> list){
+    // Day 6
+    private int currentUserId; // thêm biến này
+    // End Day 6
+    public NewsAdapter(Context context, List<Item> list, int currentUserId){
         this.context=context;
         this.list=list;
+        this.currentUserId = currentUserId;
     }
 
     @NonNull
@@ -50,6 +55,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ArticleActivity.class);
+            intent.putExtra("userId", currentUserId);
             intent.putExtra("url", it.getLink());
             context.startActivity(intent);
         });

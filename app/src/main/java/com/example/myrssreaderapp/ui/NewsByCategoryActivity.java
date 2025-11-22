@@ -38,7 +38,9 @@ public class NewsByCategoryActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerCategory);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new NewsAdapter(this, items);
+
+        int currentUserId = getIntent().getIntExtra("userId", -1);
+        adapter = new NewsAdapter(this, items, currentUserId);
         recyclerView.setAdapter(adapter);
 
         loadRss(rssUrl);

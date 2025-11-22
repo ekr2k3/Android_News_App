@@ -1,4 +1,4 @@
-package com.example.myrssreaderapp;
+package com.example.myrssreaderapp.DataHelper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class userDatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "user.db";
     public static final String TABLE_NAME = "users";
@@ -14,7 +14,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_2 = "EMAIL";
     public static final String COL_3 = "PASSWORD";
 
-    public DatabaseHelper(Context context) {
+    public userDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
     }
 
@@ -48,4 +48,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return count > 0;
     }
+    // Day 6
+    public int getUserId(String email, String password){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] columns = { COL_1 };
+        String selection = COL_2 + " = ? AND " + COL_3 + " = ?";
+        String[] selectionArgs = { email, password };
+        Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+        int userId = -1;
+        if(cursor.moveToFirst()){
+            userId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_1));
+        }
+        cursor.close();
+        return userId;
+    }
+    // End day 6
 }

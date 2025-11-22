@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myrssreaderapp.DatabaseHelper;
+import com.example.myrssreaderapp.DataHelper.userDatabaseHelper;
 import com.example.myrssreaderapp.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -17,14 +17,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etPassword;
     private Button btnLogin;
     private Button btnGoToRegister;
-    private DatabaseHelper db;
+    private userDatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        db = new DatabaseHelper(this);
+        db = new userDatabaseHelper(this);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
@@ -36,12 +36,14 @@ public class LoginActivity extends AppCompatActivity {
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
 
-                if (db.checkUser(email, password)) {
+                if(db.checkUser(email, password)){
+                    int userId = db.getUserId(email, password);
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("userId", userId);
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Email hoặc mật khẩu sai", Toast.LENGTH_SHORT).show();
                 }
             }
         });

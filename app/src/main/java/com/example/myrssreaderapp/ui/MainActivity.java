@@ -66,7 +66,21 @@ public class MainActivity extends AppCompatActivity
         // RecyclerView setup
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new NewsAdapter(this, items);
+
+        // Day 6
+        int currentUserId = getIntent().getIntExtra("userId", -1);
+        if(currentUserId == -1){
+            // Chưa đăng nhập → quay về LoginActivity
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+            finish(); // kết thúc MainActivity hiện tại
+            return; // thoát hàm
+        }
+        //End Day 6
+
+
+//        adapter = new NewsAdapter(this, items);
+        adapter = new NewsAdapter(this, items, currentUserId);
         recyclerView.setAdapter(adapter);
 
 //        loadRss();
@@ -161,12 +175,38 @@ private void loadRss(String url) {
         if (id == R.id.nav_home) {
             Toast.makeText(this,"Trang chủ",Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_category) {
+            int currentUserId = getIntent().getIntExtra("userId", -1);
+            if(currentUserId == -1){
+                // Chưa đăng nhập → quay về LoginActivity
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivity(loginIntent);
+                finish(); // kết thúc MainActivity hiện tại
+                return true; // thoát hàm
+            }
             Intent intent = new Intent(this, CategoryActivity.class);
+            intent.putExtra("userId", currentUserId);
             startActivity(intent);
         } else if (id == R.id.nav_search) {
             Toast.makeText(this,"Search",Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_bookmark) {
-            Toast.makeText(this,"Bookmark",Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this,"Bookmark",Toast.LENGTH_SHORT).show();
+
+            int currentUserId = getIntent().getIntExtra("userId", -1);
+            if(currentUserId == -1){
+                // Chưa đăng nhập → quay về LoginActivity
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivity(loginIntent);
+                finish(); // kết thúc MainActivity hiện tại
+                return true; // thoát hàm
+            }
+            Intent intent = new Intent(this, BookmarkActivity.class);
+            intent.putExtra("userId", currentUserId);
+
+
+            // In thử ra để kiểm tra giá trị của currentUserId
+            String currentUserIdString = String.valueOf(currentUserId);
+            Toast.makeText(this,currentUserIdString,Toast.LENGTH_SHORT).show();
+            startActivity(intent);
         } else if (id == R.id.nav_settings) {
             Toast.makeText(this,"Cài đặt",Toast.LENGTH_SHORT).show();
         }

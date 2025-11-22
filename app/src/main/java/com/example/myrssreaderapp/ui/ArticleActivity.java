@@ -1,7 +1,9 @@
 package com.example.myrssreaderapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -12,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myrssreaderapp.models.ArticleItem;
 import com.example.myrssreaderapp.R;
 import com.example.myrssreaderapp.adapter.ArticleAdapter;
+import com.example.myrssreaderapp.models.BookmarkItem;
+import com.example.myrssreaderapp.sql.BookmarkManager;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,10 +38,22 @@ public class ArticleActivity extends AppCompatActivity {
     ArticleAdapter adapter;
     List<ArticleItem> articleItems = new ArrayList<>();
 
+    // Day 6
+    private ImageButton btnSaveArticle;
+    private boolean isSaved = false;
+    private String articleUrl;
+    private BookmarkManager bookmarkManager;
+    private int currentUserId;
+    // End Day 6
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
+        //Day 6
+//        currentUserId = getIntent().getIntExtra("userId", -1); // Cái này là từ MainActivity chuyển qua
+//        if(currentUserId == -1){ finish(); return; }
+        //End day 6
 
         recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progressBar);
@@ -48,8 +64,37 @@ public class ArticleActivity extends AppCompatActivity {
 
         String url = getIntent().getStringExtra("url");
         if (url != null) loadArticle(url);
+
+        btnSaveArticle = findViewById(R.id.btnSaveArticle);
+
+        //Day 6
+//        btnSaveArticle = findViewById(R.id.btnSaveArticle);
+        articleUrl = getIntent().getStringExtra("url");
+        bookmarkManager = new BookmarkManager(this);
+        BookmarkItem bookmark = new BookmarkItem(articleUrl, currentUserId);
+
+        isSaved = bookmarkManager.isBookmarked(bookmark);
+        updateBookmarkIcon();
+
+        btnSaveArticle.setOnClickListener(v -> {
+            if(isSaved){
+                bookmarkManager.removeBookmark(bookmark);
+                isSaved = false;
+            } else {
+                bookmarkManager.addBookmark(bookmark);
+                isSaved = true;
+            }
+            updateBookmarkIcon();
+        });
+        //End day 6
     }
 
+    //Day 6
+    private void updateBookmarkIcon(){
+        if(isSaved) btnSaveArticle.setImageResource(R.drawable.ic_bookmark_filled);
+        else btnSaveArticle.setImageResource(R.drawable.ic_bookmark_outline);
+    }
+    //end day 6
     private void loadArticle(String url) {
         progressBar.setVisibility(View.VISIBLE);
 

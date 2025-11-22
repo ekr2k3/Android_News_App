@@ -50,6 +50,15 @@ public class CategoryActivity extends AppCompatActivity {
             Intent intent = new Intent(CategoryActivity.this, NewsByCategoryActivity.class);
             intent.putExtra("rss_url", rssLinks[position]);
             intent.putExtra("title", categories[position]);
+            int currentUserId = getIntent().getIntExtra("userId", -1);
+            if(currentUserId == -1){
+                // Chưa đăng nhập → quay về LoginActivity
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivity(loginIntent);
+                finish(); // kết thúc MainActivity hiện tại
+                return; // thoát hàm
+            }
+            intent.putExtra("userId", currentUserId);
             startActivity(intent);
         });
     }
