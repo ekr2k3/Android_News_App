@@ -51,4 +51,6 @@ dependencies {
     implementation("com.squareup.picasso:picasso:2.8")
     // JSoup
     implementation("org.jsoup:jsoup:1.16.1")
+    // gson Day 7
+    implementation("com.google.code.gson:gson:2.11.0")
 }

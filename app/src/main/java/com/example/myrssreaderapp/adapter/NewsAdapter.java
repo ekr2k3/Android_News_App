@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,6 +54,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         }
 
         holder.itemView.setOnClickListener(v -> {
+            Toast.makeText(context, "is throwing NewsAdapter: " + it.getTitle(), Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(context, ArticleActivity.class);
             intent.putExtra("userId", currentUserId);
             intent.putExtra("url", it.getLink());

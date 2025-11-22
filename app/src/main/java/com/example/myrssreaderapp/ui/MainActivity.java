@@ -21,6 +21,7 @@ import com.example.myrssreaderapp.adapter.NewsAdapter;
 import com.example.myrssreaderapp.models.Item;
 import com.example.myrssreaderapp.models.RssFeed;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -187,7 +188,19 @@ private void loadRss(String url) {
             intent.putExtra("userId", currentUserId);
             startActivity(intent);
         } else if (id == R.id.nav_search) {
-            Toast.makeText(this,"Search",Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+            int currentUserId = getIntent().getIntExtra("userId", -1);
+            if(currentUserId == -1){
+                // Chưa đăng nhập → quay về LoginActivity
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivity(loginIntent);
+                finish(); // kết thúc MainActivity hiện tại
+                return true; // thoát hàm
+            }
+
+            intent.putExtra("items", new Gson().toJson(items));  // CHUYỂN LIST SANG DẠNG JSON
+            startActivity(intent);
         } else if (id == R.id.nav_bookmark) {
 //            Toast.makeText(this,"Bookmark",Toast.LENGTH_SHORT).show();
 
