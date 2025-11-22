@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myrssreaderapp.DataHelper.userDatabaseHelper;
 import com.example.myrssreaderapp.ui.ArticleActivity;
 import com.example.myrssreaderapp.R;
 import com.example.myrssreaderapp.models.Item;

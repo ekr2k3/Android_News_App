@@ -11,8 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myrssreaderapp.DataHelper.DatabaseHelper;
 import com.example.myrssreaderapp.models.BookmarkItem;
-import com.example.myrssreaderapp.sql.BookmarkManager;
 import com.example.myrssreaderapp.ui.ArticleActivity;
 import com.example.myrssreaderapp.R;
 
@@ -22,12 +22,12 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
 
     private Context context;
     private List<BookmarkItem> list;
-    private BookmarkManager bookmarkManager;
+    private DatabaseHelper db;
 
-    public BookmarkAdapter(List<BookmarkItem> list, Context context, BookmarkManager bookmarkManager){
+    public BookmarkAdapter(List<BookmarkItem> list, Context context, DatabaseHelper db){
         this.list = list;
         this.context = context;
-        this.bookmarkManager = bookmarkManager;
+        this.db = db;
     }
 
     @NonNull
@@ -53,7 +53,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
 
         // Nút xóa bookmark
         holder.btnDelete.setOnClickListener(v -> {
-            bookmarkManager.removeBookmark(item);
+            db.deleteBookmark(item.getUserId(), item.getUrl());
             list.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, list.size());

@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myrssreaderapp.DataHelper.userDatabaseHelper;
+import com.example.myrssreaderapp.DataHelper.DatabaseHelper;
 import com.example.myrssreaderapp.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -17,14 +17,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etPassword;
     private Button btnLogin;
     private Button btnGoToRegister;
-    private userDatabaseHelper db;
+    private DatabaseHelper db = new DatabaseHelper(this);;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        db = new userDatabaseHelper(this);
+        db = new DatabaseHelper(this);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);

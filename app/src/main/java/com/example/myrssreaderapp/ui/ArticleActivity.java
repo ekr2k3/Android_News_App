@@ -11,11 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myrssreaderapp.DataHelper.DatabaseHelper;
 import com.example.myrssreaderapp.models.ArticleItem;
 import com.example.myrssreaderapp.R;
 import com.example.myrssreaderapp.adapter.ArticleAdapter;
 import com.example.myrssreaderapp.models.BookmarkItem;
-import com.example.myrssreaderapp.sql.BookmarkManager;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,7 +42,7 @@ public class ArticleActivity extends AppCompatActivity {
     private ImageButton btnSaveArticle;
     private boolean isSaved = false;
     private String articleUrl;
-    private BookmarkManager bookmarkManager;
+    private DatabaseHelper dbHelper = new DatabaseHelper(this);
     private int currentUserId;
     // End Day 6
 
@@ -51,7 +51,7 @@ public class ArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
         //Day 6
-//        currentUserId = getIntent().getIntExtra("userId", -1); // Cái này là từ MainActivity chuyển qua
+       currentUserId = getIntent().getIntExtra("userId", -1); // Cái này là từ NewsAdapter chuyển qua
 //        if(currentUserId == -1){ finish(); return; }
         //End day 6
 
@@ -70,18 +70,21 @@ public class ArticleActivity extends AppCompatActivity {
         //Day 6
 //        btnSaveArticle = findViewById(R.id.btnSaveArticle);
         articleUrl = getIntent().getStringExtra("url");
-        bookmarkManager = new BookmarkManager(this);
         BookmarkItem bookmark = new BookmarkItem(articleUrl, currentUserId);
 
-        isSaved = bookmarkManager.isBookmarked(bookmark);
+        isSaved = dbHelper.isBookmarked(currentUserId, articleUrl);
+
         updateBookmarkIcon();
 
         btnSaveArticle.setOnClickListener(v -> {
             if(isSaved){
-                bookmarkManager.removeBookmark(bookmark);
+                dbHelper.deleteBookmark(bookmark.getUserId(), bookmark.getUrl());
                 isSaved = false;
             } else {
-                bookmarkManager.addBookmark(bookmark);
+                // In thử ra để kiểm tra giá trị của currentUserId
+                String currentUserIdString = String.valueOf(bookmark.getUserId());
+                Toast.makeText(this,"Gia tri id user tu ArticleActivity" + currentUserIdString,Toast.LENGTH_SHORT).show();
+                dbHelper.addBookmark(bookmark.getUserId(), bookmark.getUrl());
                 isSaved = true;
             }
             updateBookmarkIcon();

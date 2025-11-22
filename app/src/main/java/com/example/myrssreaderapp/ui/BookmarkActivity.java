@@ -7,10 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myrssreaderapp.DataHelper.DatabaseHelper;
 import com.example.myrssreaderapp.R;
 import com.example.myrssreaderapp.adapter.BookmarkAdapter;
 import com.example.myrssreaderapp.models.BookmarkItem;
-import com.example.myrssreaderapp.sql.BookmarkManager;
+
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class BookmarkActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private BookmarkAdapter adapter;
-    private BookmarkManager bookmarkManager;
+    private DatabaseHelper db = new DatabaseHelper(this);;
     private int currentUserId;
 
     @Override
@@ -41,8 +42,7 @@ public class BookmarkActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        bookmarkManager = new BookmarkManager(this);
-        List<BookmarkItem> list = bookmarkManager.getBookmarksForUser(currentUserId);
+        List<BookmarkItem> list = db.getBookmarksByUser(currentUserId);
 
         if(list.size() > 0){
             System.out.println(list.get(0));
@@ -51,7 +51,7 @@ public class BookmarkActivity extends AppCompatActivity {
             System.out.println("Khong co du lieu"); //  ở đây có lỗi
         }
         // Adapter
-        adapter = new BookmarkAdapter(list, this, bookmarkManager);
+        adapter = new BookmarkAdapter(list, this, db);
         recyclerView.setAdapter(adapter);
     }
 }

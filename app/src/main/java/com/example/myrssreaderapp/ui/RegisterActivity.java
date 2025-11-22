@@ -7,7 +7,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myrssreaderapp.DataHelper.userDatabaseHelper;
+import com.example.myrssreaderapp.DataHelper.DatabaseHelper;
 import com.example.myrssreaderapp.R;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -16,14 +16,14 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etPassword;
     private EditText etConfirmPassword;
     private Button btnRegister;
-    private userDatabaseHelper db;
+    private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        db = new userDatabaseHelper(this);
+        db = new DatabaseHelper(this);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
@@ -37,8 +37,8 @@ public class RegisterActivity extends AppCompatActivity {
                 String confirmPassword = etConfirmPassword.getText().toString();
 
                 if (password.equals(confirmPassword)) {
-                    boolean isAdded = db.addUser(email, password);
-                    if (isAdded) {
+                    long isAdded = db.addUser(email, password);
+                    if (isAdded > 0) {
                         Toast.makeText(RegisterActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
                         finish(); // Go back to LoginActivity
                     } else {
