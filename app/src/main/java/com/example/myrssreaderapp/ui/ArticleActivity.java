@@ -2,7 +2,9 @@ package com.example.myrssreaderapp.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.*;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -12,10 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myrssreaderapp.DataHelper.DatabaseHelper;
+import com.example.myrssreaderapp.adapter.CommentAdapter;
 import com.example.myrssreaderapp.models.ArticleItem;
 import com.example.myrssreaderapp.R;
 import com.example.myrssreaderapp.adapter.ArticleAdapter;
 import com.example.myrssreaderapp.models.BookmarkItem;
+import com.example.myrssreaderapp.models.Comment;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,6 +37,14 @@ import java.util.List;
 
 public class ArticleActivity extends AppCompatActivity {
 
+    // Day 7
+    private RecyclerView rvComments;
+    private EditText edtNewComment;
+    private Button btnPostComment;
+    private CommentAdapter commentAdapter;
+    private DatabaseHelper dbHelper;
+
+    // End Day 7
     RecyclerView recyclerView;
     ProgressBar progressBar;
     ArticleAdapter adapter;
@@ -41,7 +53,7 @@ public class ArticleActivity extends AppCompatActivity {
     // Day 6
     private ImageButton btnSaveArticle;
     private boolean isSaved = false;
-    private DatabaseHelper dbHelper = new DatabaseHelper(this);
+//    private DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     // Cái này là từ NewsAdapter chuyển qua hặc từ BookMarkAdapter chuyển qua
 //        intent.putExtra("userId", currentUserId);
@@ -61,6 +73,11 @@ public class ArticleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
+
+        dbHelper = new DatabaseHelper(this);
+
+
+
         //Day 6
         currentUserId = getIntent().getIntExtra("userId", -1);
         title = getIntent().getStringExtra("title");
@@ -107,8 +124,57 @@ public class ArticleActivity extends AppCompatActivity {
             updateBookmarkIcon();
         });
         //End day 6
+
+
+        // Day 7
+        rvComments = findViewById(R.id.rvComments);
+        edtNewComment = findViewById(R.id.edtNewComment);
+        btnPostComment = findViewById(R.id.btnPostComment);
+
+//        dbHelper = new DatabaseHelper(this); Đẩy leen trên
+
+        // lấy articleUrl từ Intent
+        articleUrl = getIntent().getStringExtra("url");
+
+        rvComments.setLayoutManager(new LinearLayoutManager(this));
+        commentAdapter = new CommentAdapter(new ArrayList<>());
+        rvComments.setAdapter(commentAdapter);
+
+        loadComments();
+
+        btnPostComment.setOnClickListener(v -> {
+            String content = edtNewComment.getText().toString().trim();
+            if (TextUtils.isEmpty(content)) {
+                Toast.makeText(this, "Nhập nội dung bình luận", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Lấy email nào đó — nếu bạn có user login thì lấy email user
+//            String email = "guest@example.com";
+
+            String email = dbHelper.getEmailById(currentUserId);
+            Comment comment = new Comment(articleUrl, email, content);
+            long id = dbHelper.addComment(comment);
+            if (id > 0) {
+                comment.setIdComment((int) id);
+                commentAdapter.addComment(comment);
+                rvComments.scrollToPosition(0);
+                edtNewComment.setText("");
+                Toast.makeText(this, "Đã gửi bình luận", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Gửi thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // End day 7
     }
 
+    // Day 7
+    private void loadComments() {
+        List<Comment> list = dbHelper.getCommentsByArticle(articleUrl);
+        commentAdapter.setComments(list);
+    }
+    // End Day 7
     //Day 6
     private void updateBookmarkIcon(){
         if(isSaved) btnSaveArticle.setImageResource(R.drawable.ic_bookmark_filled);

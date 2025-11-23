@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myrssreaderapp.ApiClient;
+import com.example.myrssreaderapp.DataHelper.DatabaseHelper;
 import com.example.myrssreaderapp.R;
 import com.example.myrssreaderapp.RssService;
 import com.example.myrssreaderapp.adapter.NewsAdapter;
@@ -222,6 +223,10 @@ private void loadRss(String url) {
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
             Toast.makeText(this,"Cài đặt",Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, SettingActivity.class);
+            String email = new DatabaseHelper(this).getEmailById(getIntent().getIntExtra("userId", -1));
+            intent.putExtra("email", email);
+            startActivity(intent);
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);

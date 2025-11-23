@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.myrssreaderapp.models.BookmarkItem;
+import com.example.myrssreaderapp.models.Comment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_ARTICLE_DESCRIPTION = "description";
     public static final String COL_ARTICLE_IMAGE_URL = "image_url";
 
+    // Bảng COMMENT (Day 8)
+    public static final String TABLE_COMMENT = "COMMENT";
+    public static final String COL_COMMENT_ID = "idComment";
+    public static final String COL_COMMENT_URL = "urlArticle";
+    public static final String COL_COMMENT_EMAIL = "email";
+    public static final String COL_COMMENT_CONTENT = "content";
+
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -54,12 +63,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_ARTICLE_URL + " TEXT," +
                 "FOREIGN KEY(" + COL_BOOKMARK_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COL_USER_ID + "))";
         db.execSQL(createBookmarkTable);
+
+        // Tạo bảng COMMENT nếu nó chưa tồn tại
+        String createCommentTable = "CREATE TABLE IF NOT EXISTS " + TABLE_COMMENT + " (" +
+                COL_COMMENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COL_COMMENT_URL + " TEXT NOT NULL," +
+                COL_COMMENT_EMAIL + " TEXT NOT NULL," +
+                COL_COMMENT_CONTENT + " TEXT NOT NULL)";
+        db.execSQL(createCommentTable);
+
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOOKMARK);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
+        if(oldVersion < 2){
+            // nếu version tăng thì tạo bảng Comment nếu chua có chứ không xóa dữ liệu cũ
+            String createCommentTable = "CREATE TABLE IF NOT EXISTS " + TABLE_COMMENT + " (" +
+                    COL_COMMENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    COL_COMMENT_URL + " TEXT NOT NULL," +
+                    COL_COMMENT_EMAIL + " TEXT NOT NULL," +
+                    COL_COMMENT_CONTENT + " TEXT NOT NULL)";
+            db.execSQL(createCommentTable);
+        }
         onCreate(db);
     }
 
@@ -118,6 +146,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
+    public String getEmailById(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        String email = null;
+
+        try {
+            cursor = db.query(TABLE_USER,
+                    new String[]{COL_EMAIL},
+                    COL_USER_ID + "=?",
+                    new String[]{String.valueOf(userId)},
+                    null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                email = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMAIL));
+            }
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+        return email; // sẽ trả về null nếu không tìm thấy
+    }
     // Phương thức quản lý bookmark
     // -----------------------
     // ...
@@ -181,4 +230,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+
+
+    // -----------------------
+    // COMMENT FUNCTIONS (mới)
+    // -----------------------
+    public long addComment(Comment comment) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_COMMENT_URL, comment.getUrlArticle());
+        values.put(COL_COMMENT_EMAIL, comment.getEmail());
+        values.put(COL_COMMENT_CONTENT, comment.getContent());
+        return db.insert(TABLE_COMMENT, null, values);
+    }
+
+    public List<Comment> getCommentsByArticle(String urlArticle) {
+        List<Comment> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_COMMENT,
+                null,
+                COL_COMMENT_URL + "=?",
+                new String[]{urlArticle},
+                null, null,
+                COL_COMMENT_ID + " DESC");
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                Comment c = new Comment();
+                c.setIdComment(cursor.getInt(cursor.getColumnIndexOrThrow(COL_COMMENT_ID)));
+                c.setUrlArticle(cursor.getString(cursor.getColumnIndexOrThrow(COL_COMMENT_URL)));
+                c.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(COL_COMMENT_EMAIL)));
+                c.setContent(cursor.getString(cursor.getColumnIndexOrThrow(COL_COMMENT_CONTENT)));
+                list.add(c);
+            }
+            cursor.close();
+        }
+
+        return list;
+    }
+
+    public int deleteComment(int idComment) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_COMMENT, COL_COMMENT_ID + "=?", new String[]{String.valueOf(idComment)});
+    }
+
 }

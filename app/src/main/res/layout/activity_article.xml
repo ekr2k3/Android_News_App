@@ -1,27 +1,68 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
+    <!-- RecyclerView bài viết chính -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
+    <!-- Header bình luận -->
+    <TextView
+        android:id="@+id/txtCommentHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bình luận"
+        android:textStyle="bold"
+        android:padding="8dp" />
+
+    <!-- RecyclerView bình luận -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvComments"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:padding="4dp" />
+
+    <!-- Nhập bình luận -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/edtNewComment"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="Viết bình luận..." />
+
+        <Button
+            android:id="@+id/btnPostComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gửi" />
+    </LinearLayout>
+
+    <!-- Nút bookmark nổi lên trên cùng phải -->
     <ImageButton
         android:id="@+id/btnSaveArticle"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
         android:layout_margin="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_bookmark_outline"
         android:contentDescription="Lưu bài báo"/>
 
-</RelativeLayout>
+    <!-- ProgressBar ở giữa màn hình -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+</LinearLayout>
